@@ -27,10 +27,15 @@ namespace HODOREST
             this.Refresh();
         }
 
+		public void Kill()
+		{
+			runner.Abort();
+		}
+
 
         public void RunList()
         {
-            Thread.Sleep(100);
+            //Thread.Sleep(100);
 
             int stepAmount = 100 / runList.Count;
             string path = MainForm.homeworldDir + "\\GBXTools\\HODOR\\HODOR.exe";
@@ -103,9 +108,10 @@ namespace HODOREST
             });
         }
 
+		Thread runner;
         private void RunWindow_Load(object sender, EventArgs e)
         {
-            Thread runner = new Thread(new ThreadStart(RunList));
+            runner = new Thread(new ThreadStart(RunList));
             runner.Start();
             //RunList();
         }
@@ -154,5 +160,10 @@ namespace HODOREST
             if (pb.Owner != null)
                 pb.Owner.Update();
         }
+
+		private void RunWindow_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			runner.Abort();
+		}
     }
 }

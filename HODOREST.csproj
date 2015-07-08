@@ -35,6 +35,9 @@
     <ApplicationIcon>WorkshopTool_0000.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Octokit">
+      <HintPath>..\..\octokit.net\Octokit\bin\Release\Net45\Octokit.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using Octokit;
+using System.Reflection;
 
 namespace HODOREST
 {
@@ -22,8 +25,6 @@ namespace HODOREST
         {
             InitializeComponent();
 
-            Properties.Settings.Default.Reload();
-
             homeworldDir = Properties.Settings.Default.HomeworldDir;
             outputGlobal = Properties.Settings.Default.GlobalOutput;
 
@@ -33,9 +34,36 @@ namespace HODOREST
             currentProfile = new ShipProfile(outputGlobal);
             currentProfile.PreviewRebuildTiggered += UpdatePreview;
             chkListMain.Items.Add(currentProfile, currentProfile.Enabled);
-            UpdateFields();
-            UpdatePreview();
+			UpdateFields();
+			UpdatePreview();
+
+			CheckVersion();
         }
+
+		private void CheckVersion()
+		{
+			var client = new Octokit.GitHubClient(new ProductHeaderValue("HODOREST"));
+			var releases = client.Release.GetAll("xercodo", "HODOREST");
+			var latest = releases.Result[0];
+
+			Version ver = Assembly.GetExecutingAssembly().GetName().Version;
+			string currentVersion = ver.Major + "." + ver.Minor + "-beta";
+			if (currentVersion != latest.TagName)
+			{
+				DialogResult result = MessageBox.Show(this, "There's a newer version of HODOREST!\r\n\r\n" +
+					"Current: " + currentVersion + "\r\n" +
+					"Latest Version: " + latest.TagName + "\r\n\r\n" +
+					"Do you want to visit the release page now?",
+					"Newer Version", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+				if (result == System.Windows.Forms.DialogResult.Yes)
+				{
+					Process proc = new Process();
+					proc.StartInfo = new ProcessStartInfo(latest.HtmlUrl);
+					proc.Start();
+					this.Close();
+				}
+			}
+		}
 
         private void pluginToExportDAEFromBlenderToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -103,13 +131,18 @@ namespace HODOREST
             if (hasEmpty)
             {
                 runToolStripMenuItem.Enabled = false;
-                btnStartNew.Enabled = false;
+				btnNew.Enabled = false;
             }
             else
             {
                 runToolStripMenuItem.Enabled = (chkListMain.Items.Count > 0) ? true : false;
-                btnStartNew.Enabled = true;
+				btnNew.Enabled = true;
             }
+
+			if (chkListMain.Items.Count == 0)
+			{
+				btnStartNew_Click(this, EventArgs.Empty);
+			}
 
             chkListMain.SelectedItem = currentProfile;
             chkListMain.Refresh();
@@ -152,16 +185,19 @@ namespace HODOREST
         {
             if (chkListMain.SelectedItem != null)
             {
-                removeToolStripMenuItem.Enabled = true;
+				btnDelete.Enabled = true;
+
+				currentProfile.PreviewRebuildTiggered -= UpdatePreview;
 
                 ShipProfile newCurrent;
                 newCurrent = (chkListMain.SelectedItem as ShipProfile);
                 currentProfile = newCurrent;
+				currentProfile.PreviewRebuildTiggered += UpdatePreview;
                 UpdateFields();
             }
             else
             {
-                removeToolStripMenuItem.Enabled = false;
+				btnDelete.Enabled = false;
             }
         }
 
@@ -204,21 +240,105 @@ namespace HODOREST
             }
         }
 
+		RunWindow runner;
         private void runToolStripMenuItem_Click(object sender, EventArgs e)
         {
+			if (!File.Exists(MainForm.homeworldDir + "\\GBXTools\\HODOR\\HODOR.exe"))
+			{
+				MessageBox.Show(this, 
+					"Cannot find HODOR.\r\n\r\nCheck your Homeworld Directory path!", 
+					"Cannot Find", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				return;
+			}
             List<ShipProfile> sendList = new List<ShipProfile>();
             foreach (object item in chkListMain.Items)
             {
-                sendList.Add(item as ShipProfile);
+				ShipProfile temp = item as ShipProfile;
+				if (temp.Enabled)
+				{
+					sendList.Add(temp);
+				}
             }
 
-            RunWindow runner = new RunWindow(sendList);
+			runner = new RunWindow(sendList);
             runner.ShowDialog();
         }
+
+		private void SaveList(CheckedListBox.ObjectCollection items)
+		{
+			List<ShipProfile> profiles = items.Cast<ShipProfile>().ToList<ShipProfile>();
+
+			using (MemoryStream ms = new MemoryStream())
+			{
+				try
+				{
+					BinaryFormatter bf = new BinaryFormatter();
+					bf.Serialize(ms, profiles);
+					ms.Position = 0;
+					byte[] buffer = new byte[(int)ms.Length];
+					ms.Read(buffer, 0, buffer.Length);
+					Properties.Settings.Default.BuildList = Convert.ToBase64String(buffer);
+					Properties.Settings.Default.Save();
+				}
+				catch (Exception ex)
+				{
+					string smg = ex.ToString();
+				}
+			}
+		}
+
+		private CheckedListBox.ObjectCollection LoadList()
+		{
+			using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(Properties.Settings.Default.BuildList)))
+			{
+				try
+				{
+					BinaryFormatter bf = new BinaryFormatter();
+					List<ShipProfile> profiles = (List<ShipProfile>)bf.Deserialize(ms);
+					CheckedListBox.ObjectCollection coll = new CheckedListBox.ObjectCollection(new CheckedListBox());
+					coll.AddRange(profiles.ToArray<object>());
+					return coll;
+				}
+				catch(Exception ex)
+				{
+					string smg = ex.ToString();
+					return new CheckedListBox.ObjectCollection(null);
+				}
+			}
+		}
+
+		private void MainForm_Load(object sender, EventArgs e)
+		{
+			chkListMain.Items.Clear();
+			chkListMain.Items.AddRange(LoadList());
+			UpdateFields();
+			UpdatePreview();
+
+			for (int i = 0; i < chkListMain.Items.Count; i++)
+			{
+				chkListMain.SetItemChecked(i, (chkListMain.Items[i] as ShipProfile).Enabled);
+			}
+
+			chkListMain.SelectedIndex = 0;
+		}
+
+		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			if (runner != null)
+			{
+				runner.Kill();
+				runner.Close();
+			}
+
+			currentProfile.PreviewRebuildTiggered -= UpdatePreview;
+
+			SaveList(chkListMain.Items);
+		}
     }
 
     public delegate void DataChangedHandler();
 
+	[Serializable]
     public class ShipProfile
     {
         private string shipName;
