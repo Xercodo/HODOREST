@@ -12,6 +12,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Octokit;
 using System.Reflection;
+using System.Configuration;
 
 namespace HODOREST
 {
@@ -294,7 +295,13 @@ namespace HODOREST
 
 		private CheckedListBox.ObjectCollection LoadList()
 		{
-			Properties.Settings.Default.Upgrade();
+            if (Properties.Settings.Default.DoUpgrade)
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.DoUpgrade = false;
+                Properties.Settings.Default.Save();
+            }
+
 			using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(Properties.Settings.Default.BuildList)))
 			{
 				try

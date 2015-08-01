@@ -7,9 +7,6 @@
 *.userosscache
 *.sln.docstates
 
-# User-specific files (MonoDevelop/Xamarin Studio)
-*.userprefs
-
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -22,16 +19,14 @@ bld/
 [Bb]in/
 [Oo]bj/
 
-# Visual Studio 2015 cache/options directory
-.vs/
-# Uncomment if you have tasks that create the project's static files in wwwroot
-#wwwroot/
+# Roslyn cache directories
+*.ide/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
-# NUNIT
+#NUNIT
 *.VisualState.xml
 TestResult.xml
 
@@ -39,10 +34,6 @@ TestResult.xml
 [Dd]ebugPS/
 [Rr]eleasePS/
 dlldata.c
-
-# DNX
-project.lock.json
-artifacts/
 
 *_i.c
 *_p.c
@@ -96,7 +87,7 @@ _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
 
-# JustCode is a .NET coding add-in
+# JustCode is a .NET coding addin-in
 .JustCode
 
 # TeamCity is a build add-in
@@ -108,7 +99,6 @@ _TeamCity*
 # NCrunch
 _NCrunch_*
 .*crunch*.local.xml
-nCrunchTemp_*
 
 # MightyMoose
 *.mm.*
@@ -147,7 +137,7 @@ publish/
 **/packages/*
 # except build/, which is used as an MSBuild target.
 !**/packages/build/
-# Uncomment if necessary however generally it will be regenerated when needed
+# If using the old MSBuild-Integrated Package Restore, uncomment this:
 #!**/packages/repositories.config
 
 # Windows Azure Build Output
@@ -157,13 +147,9 @@ csx/
 # Windows Store app package directory
 AppPackages/
 
-# Visual Studio cache files
-# files ending in .cache can be ignored
-*.[Cc]ache
-# but keep track of directories ending in .cache
-!*.[Cc]ache/
-
 # Others
+sql/
+*.Cache
 ClientBin/
 [Ss]tyle[Cc]op.*
 ~$*
@@ -173,7 +159,6 @@ ClientBin/
 *.pfx
 *.publishsettings
 node_modules/
-orleans.codegen.cs
 
 # RIA/Silverlight projects
 Generated_Code/
@@ -198,19 +183,49 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 
-# Node.js Tools for Visual Studio
-.ntvs_analysis.dat
+# =========================
+# Operating System Files
+# =========================
 
-# Visual Studio 6 build log
-*.plg
+# OSX
+# =========================
 
-# Visual Studio 6 workspace options file
-*.opt
+.DS_Store
+.AppleDouble
+.LSOverride
 
-# Visual Studio LightSwitch build output
-**/*.HTMLClient/GeneratedArtifacts
-**/*.DesktopClient/GeneratedArtifacts
-**/*.DesktopClient/ModelManifest.xml
-**/*.Server/GeneratedArtifacts
-**/*.Server/ModelManifest.xml
-_Pvt_Extensions
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+# =========================
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
