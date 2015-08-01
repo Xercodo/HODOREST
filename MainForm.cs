@@ -268,6 +268,11 @@ namespace HODOREST
 		{
 			List<ShipProfile> profiles = items.Cast<ShipProfile>().ToList<ShipProfile>();
 
+			foreach (ShipProfile item in profiles)
+			{
+				item.PreviewRebuildTiggered -= UpdatePreview;
+			}
+
 			using (MemoryStream ms = new MemoryStream())
 			{
 				try
@@ -289,6 +294,7 @@ namespace HODOREST
 
 		private CheckedListBox.ObjectCollection LoadList()
 		{
+			Properties.Settings.Default.Upgrade();
 			using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(Properties.Settings.Default.BuildList)))
 			{
 				try
@@ -334,7 +340,7 @@ namespace HODOREST
 
 			SaveList(chkListMain.Items);
 		}
-    }
+	}
 
     public delegate void DataChangedHandler();
 
