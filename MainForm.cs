@@ -26,6 +26,13 @@ namespace HODOREST
         {
             InitializeComponent();
 
+			if (Properties.Settings.Default.DoUpgrade)
+			{
+				Properties.Settings.Default.Upgrade();
+				Properties.Settings.Default.DoUpgrade = false;
+				Properties.Settings.Default.Save();
+			}
+
             homeworldDir = Properties.Settings.Default.HomeworldDir;
             outputGlobal = Properties.Settings.Default.GlobalOutput;
 
@@ -37,9 +44,23 @@ namespace HODOREST
             chkListMain.Items.Add(currentProfile, currentProfile.Enabled);
 			UpdateFields();
 			UpdatePreview();
+			LoadShaders();
 
 			CheckVersion();
         }
+
+		private void LoadShaders()
+		{
+			if(Directory.Exists(MainForm.homeworldDir + "\\GBXTools\\HODOR"))
+			{
+				var shaders = Directory.EnumerateFiles(MainForm.homeworldDir + "\\GBXTools\\HODOR", "*.MAP", SearchOption.TopDirectoryOnly);
+
+				foreach (string item in shaders)
+				{
+					comboShaders.Items.Add(Path.GetFileNameWithoutExtension(item));
+				}
+			}
+		}
 
 		private void CheckVersion()
 		{
@@ -207,6 +228,19 @@ namespace HODOREST
             txtShip.Text = currentProfile.ShipName;
             txtDAE.Text = currentProfile.DAEFile;
             txtOutputDir.Text = currentProfile.OutputDir;
+
+			this.chkCompress.Checked = currentProfile.Compression;
+			this.rdoShader.Checked = currentProfile.CompressShader;
+			this.rdo8888.Checked = currentProfile.Compress8888;
+			this.rdoDXT1.Checked = currentProfile.CompressDXT1;
+			this.rdoDXT3.Checked = currentProfile.CompressDXT3;
+			this.rdoDXT5.Checked = currentProfile.CompressDXT5;
+			this.chkNoOpt.Checked = currentProfile.NoOptimize;
+			this.chkForceScar.Checked = currentProfile.ForceScars;
+			this.chkFilterScar.Checked = currentProfile.FilterScars;
+			this.txtScarFilter.Text = currentProfile.FilterList;
+			this.chkStripJunk.Checked = currentProfile.StripJunk;
+			this.comboShaders.Text = currentProfile.Shader;
         }
 
         private void chkListMain_ItemCheck(object sender, ItemCheckEventArgs e)
@@ -295,13 +329,6 @@ namespace HODOREST
 
 		private CheckedListBox.ObjectCollection LoadList()
 		{
-            if (Properties.Settings.Default.DoUpgrade)
-            {
-                Properties.Settings.Default.Upgrade();
-                Properties.Settings.Default.DoUpgrade = false;
-                Properties.Settings.Default.Save();
-            }
-
 			using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(Properties.Settings.Default.BuildList)))
 			{
 				try
@@ -347,6 +374,86 @@ namespace HODOREST
 
 			SaveList(chkListMain.Items);
 		}
+
+		private void chkCompress_CheckedChanged(object sender, EventArgs e)
+		{
+			this.rdoShader.Enabled = chkCompress.Checked;
+			this.rdo8888.Enabled = chkCompress.Checked;
+			this.rdoDXT1.Enabled = chkCompress.Checked;
+			this.rdoDXT3.Enabled = chkCompress.Checked;
+			this.rdoDXT5.Enabled = chkCompress.Checked;
+
+			currentProfile.Compression = this.chkCompress.Checked;
+
+			if(!this.chkCompress.Checked)
+			{
+				this.rdoShader.Checked = false;
+				this.rdo8888.Checked = false;
+				this.rdoDXT1.Checked = false;
+				this.rdoDXT3.Checked = false;
+				this.rdoDXT5.Checked = false;
+			}
+		}
+
+		private void rdoShader_CheckedChanged(object sender, EventArgs e)
+		{
+			currentProfile.CompressShader = this.rdoShader.Checked;
+		}
+
+		private void rdo8888_CheckedChanged(object sender, EventArgs e)
+		{
+			currentProfile.Compress8888 = this.rdo8888.Checked;
+		}
+
+		private void rdoDXT1_CheckedChanged(object sender, EventArgs e)
+		{
+			currentProfile.CompressDXT1 = this.rdoDXT1.Checked;
+		}
+
+		private void rdoDXT3_CheckedChanged(object sender, EventArgs e)
+		{
+			currentProfile.CompressDXT3 = this.rdoDXT3.Checked;
+		}
+
+		private void rdoDXT5_CheckedChanged(object sender, EventArgs e)
+		{
+			currentProfile.CompressDXT5 = this.rdoDXT5.Checked;
+		}
+
+		private void chkNoOpt_CheckedChanged(object sender, EventArgs e)
+		{
+			currentProfile.NoOptimize = this.chkNoOpt.Checked;
+		}
+
+		private void chkForceScar_CheckedChanged(object sender, EventArgs e)
+		{
+			currentProfile.ForceScars = this.chkForceScar.Checked;
+		}
+
+		private void chkFilterScar_CheckedChanged(object sender, EventArgs e)
+		{
+			currentProfile.FilterScars = this.chkFilterScar.Checked;
+		}
+
+		private void txtScarFilter_TextChanged(object sender, EventArgs e)
+		{
+			currentProfile.FilterList = this.txtScarFilter.Text;
+		}
+
+		private void chkStripJunk_CheckedChanged(object sender, EventArgs e)
+		{
+			currentProfile.StripJunk = this.chkStripJunk.Checked;
+		}
+
+		private void comboShaders_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			currentProfile.Shader = this.comboShaders.Text;
+		}
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			currentProfile.BuildScript();
+		}
 	}
 
     public delegate void DataChangedHandler();
@@ -359,6 +466,100 @@ namespace HODOREST
         private string outputDir;
         private bool enabled;
 
+		private bool compression = true;
+		public bool Compression { get { return compression; } set { compression = value; } }
+
+		private bool compressShader;
+		public bool CompressShader { get { return compressShader; } set { compressShader = value; } }
+
+		private bool compress8888 = true;
+		public bool Compress8888 { get { return compress8888; } set { compress8888 = value; } }
+
+		private bool compressDXT1;
+		public bool CompressDXT1 { get { return compressDXT1; } set { compressDXT1 = value; } }
+
+		private bool compressDXT3;
+		public bool CompressDXT3 { get { return compressDXT3; } set { compressDXT3 = value; } }
+
+		private bool compressDXT5;
+		public bool CompressDXT5 { get { return compressDXT5; } set { compressDXT5 = value; } }
+
+
+		private bool noOptimize;
+		public bool NoOptimize { get { return noOptimize; } set { noOptimize = value; } }
+
+		private bool forceScars = true;
+		public bool ForceScars { get { return forceScars; } set { forceScars = value; } }
+
+		private bool filterScars = true;
+		public bool FilterScars { get { return filterScars; } set { filterScars = value; } }
+
+		private string filterList = "thruster,bay";
+		public string FilterList { get { return filterList; } set { filterList = value; } }
+
+
+		private bool stripJunk;
+		public bool StripJunk { get { return stripJunk; } set { stripJunk = value; } }
+
+
+		private string shader = "SHADERS";
+		public string Shader { get { return shader; } set { shader = value; } }
+
+		public string ShipName
+		{
+			get { return shipName; }
+			set
+			{
+				shipName = value;
+				if (this.PreviewRebuildTiggered != null)
+					PreviewRebuildTiggered();
+			}
+		}
+		public string DAEFile
+		{
+			get { return daeFile; }
+			set
+			{
+				daeFile = value;
+				if (this.PreviewRebuildTiggered != null)
+					PreviewRebuildTiggered();
+			}
+		}
+		public string OutputDir
+		{
+			get { return outputDir; }
+			set
+			{
+				outputDir = value;
+				if (this.PreviewRebuildTiggered != null)
+					PreviewRebuildTiggered();
+			}
+		}
+		public bool Enabled
+		{
+			get { return enabled; }
+			set { enabled = value; }
+		}
+		public string Preview
+		{
+			get
+			{
+				string returnString = "";
+
+				if (OutputDir == "")
+					returnString += "([OutputDir]\\";
+				else
+					returnString += "(" + OutputDir + "\\";
+
+				if (ShipName == "")
+					returnString += "[ShipName]\\[ShipName].HOD)";
+				else
+					returnString += ShipName + "\\" + ShipName + ".HOD)";
+
+				return returnString;
+			}
+		}
+
         public ShipProfile()
         {
             shipName = "";
@@ -366,7 +567,6 @@ namespace HODOREST
             daeFile = "";
             enabled = true;
         }
-
         public ShipProfile(string defaultOutputDir)
         {
             shipName = "";
@@ -374,68 +574,12 @@ namespace HODOREST
             daeFile = "";
             enabled = true;
         }
-
         public ShipProfile(ShipProfile oldProfile)
         {
             shipName = oldProfile.ShipName;
             outputDir = oldProfile.OutputDir;
             daeFile = oldProfile.DAEFile;
             enabled = true;
-        }
-
-        public string ShipName
-        {
-            get { return shipName; }
-            set
-            {
-                shipName = value;
-                if (this.PreviewRebuildTiggered != null)
-                    PreviewRebuildTiggered();
-            }
-        }
-        public string DAEFile
-        {
-            get { return daeFile; }
-            set
-            {
-                daeFile = value; 
-                if (this.PreviewRebuildTiggered != null)
-                    PreviewRebuildTiggered();
-            }
-        }
-        public string OutputDir
-        {
-            get { return outputDir; }
-            set
-            {
-                outputDir = value;
-                if (this.PreviewRebuildTiggered != null)
-                    PreviewRebuildTiggered();
-            }
-        }
-        public bool Enabled
-        {
-            get { return enabled; }
-            set { enabled = value; }
-        }
-        public string Preview
-        {
-            get
-            {
-                string returnString = "";
-
-                if (OutputDir == "")
-                    returnString += "([OutputDir]\\";
-                else
-                    returnString += "(" + OutputDir + "\\";
-
-                if(ShipName == "")
-                    returnString += "[ShipName]\\[ShipName].HOD)";
-                else
-                    returnString += ShipName + "\\" + ShipName + ".HOD)";
-
-                return returnString;
-            }
         }
 
         public event DataChangedHandler PreviewRebuildTiggered;
@@ -452,9 +596,56 @@ namespace HODOREST
             writer.WriteLine("## HODOR Params - by HODOREST");
             writer.WriteLine("= -$HWRM_BASE=" + MainForm.homeworldDir);
             writer.WriteLine("= -$SHIP_NAME=" + this.ShipName);
-            writer.WriteLine("= -$SHADER_MAP=$[HWRM_BASE]\\GBXTools\\HODOR\\SHADERS.MAP");
-            writer.WriteLine("= -$SHADE_OPT_LOADDAE=Force8888");
-            writer.WriteLine("= -$HOD_SAVE_OPTS=ForceScars FilterScars=thruster,bay");
+            writer.WriteLine("= -$SHADER_MAP=$[HWRM_BASE]\\GBXTools\\HODOR\\" + this.shader + ".MAP");
+			if (this.compression)
+			{
+				string compressionName = "";
+				if (this.compressShader)
+					compressionName = "ForceMAP";
+				if (this.compress8888)
+					compressionName = "Force8888";
+				if (this.compressDXT1)
+					compressionName = "ForceDXT1";
+				if (this.compressDXT3)
+					compressionName = "ForceDXT3";
+				if (this.compressDXT5)
+					compressionName = "ForceDXT5";
+
+				writer.WriteLine("= -$SHADE_OPT_LOADDAE=" + compressionName);
+			}
+			if(this.forceScars || this.noOptimize || this.filterScars)
+			{
+				List<string> flagText = new List<string>();
+				if (this.forceScars)
+					flagText.Add("ForceScars");
+
+				if (this.noOptimize)
+					flagText.Add("noOptimize");
+
+				if (this.filterScars)
+					flagText.Add("FilterScars=" + this.filterList);
+
+				for (int i = 0; i < flagText.Count; i++)
+				{
+					if ((i + 1) < (flagText.Count))
+					{
+						flagText.Insert(i + 1, " ");
+						i++;
+					}
+				}
+
+				string flags = "";
+				foreach (string item in flagText)
+				{
+					flags += item;
+				}
+
+				writer.WriteLine("= -$HOD_SAVE_OPTS=" + flags);
+			}
+			if(this.stripJunk)
+			{
+				writer.WriteLine("= -$HOD_OPTIMIZE_OPT=StripJunk");
+			}
             writer.WriteLine("= -$CONVERT_IN=" + this.DAEFile);
             writer.WriteLine("= -$CONVERT_OUT=" + this.OutputDir + "\\$[SHIP_NAME]\\$[SHIP_NAME].HOD");
             writer.WriteLine("= -do=convert");
