@@ -70,5 +70,17 @@ namespace HODOREST.Properties {
                 this["DoUpgrade"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IgnoreMap {
+            get {
+                return ((bool)(this["IgnoreMap"]));
+            }
+            set {
+                this["IgnoreMap"] = value;
+            }
+        }
     }
 }

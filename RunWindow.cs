@@ -38,7 +38,7 @@ namespace HODOREST
             //Thread.Sleep(100);
 
             int stepAmount = 100 / runList.Count;
-            string path = MainForm.homeworldDir + "\\GBXTools\\HODOR\\HODOR.exe";
+            string path = Properties.Settings.Default.HomeworldDir + "\\GBXTools\\HODOR\\HODOR.exe";
 
             for (int i = 0; i < runList.Count; i++)
             {
@@ -59,8 +59,8 @@ namespace HODOREST
                 Process newHODOR = new Process();
                 newHODOR.StartInfo.FileName = path;
                 newHODOR.StartInfo.Arguments = "-script=hodorest.hodor";
-                newHODOR.StartInfo.Domain = MainForm.homeworldDir + "\\GBXTools\\HODOR\\";
-                newHODOR.StartInfo.WorkingDirectory = MainForm.homeworldDir + "\\GBXTools\\HODOR\\";
+				newHODOR.StartInfo.Domain = Properties.Settings.Default.HomeworldDir + "\\GBXTools\\HODOR\\";
+				newHODOR.StartInfo.WorkingDirectory = Properties.Settings.Default.HomeworldDir + "\\GBXTools\\HODOR\\";
                 newHODOR.StartInfo.CreateNoWindow = true;
                 newHODOR.StartInfo.RedirectStandardError = true;
                 newHODOR.StartInfo.RedirectStandardOutput = true;
