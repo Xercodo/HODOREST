@@ -474,8 +474,11 @@ namespace HODOREST
 
 					files = CheckTextures(directory, hodDate, usedShaders, shaders);
 
-					if (Compare(daetime, hodtime) > 0)
-						files.Add(profile.DAEFile);
+					if (File.Exists(profile.DAEFile) && File.Exists(hodPath))
+					{
+						if (Compare(daetime, hodtime) > 0)
+							files.Add(profile.DAEFile);
+					}
 
 					if (!Properties.Settings.Default.IgnoreMap)
 					{
