@@ -688,10 +688,13 @@ namespace HODOREST
 		{
 			if (listView1.SelectedItems.Count > 0)
 			{
-				List<string> files = (listView1.SelectedItems[0].Tag as ShipProfile).NewerFiles;
-				string directory = Path.GetDirectoryName((listView1.SelectedItems[0].Tag as ShipProfile).DAEFile);
+				ShipProfile profile = (listView1.SelectedItems[0].Tag as ShipProfile);
+				List<string> files = profile.NewerFiles;
 				if (files.Count > 0)
 				{
+					string directory = "";
+					if(File.Exists(profile.DAEFile))
+						directory = Path.GetDirectoryName(profile.DAEFile);
 					NewerFilesList listWindow = new NewerFilesList(files, directory);
 					listWindow.ShowDialog();
 				}
