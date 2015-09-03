@@ -21,12 +21,16 @@ namespace HODOREST
 			foreach (string file in files)
 			{
 				string fullPath = "";
-				if (Path.GetExtension(file) != ".MAP")
-					fullPath = directory + "\\" + file;
-				else
-					fullPath = file;
 				ListViewItem newItem = new ListViewItem(Path.GetFileName(file));
-				DateTime fileDate = File.GetLastWriteTime(fullPath);
+				DateTime fileDate;				
+				try
+				{
+					fileDate = File.GetLastWriteTime(fullPath);
+				}
+				catch
+				{
+					fileDate = File.GetLastWriteTime(file);
+				}
 
 				string date = fileDate.ToShortDateString();
 				string time = fileDate.ToShortTimeString();

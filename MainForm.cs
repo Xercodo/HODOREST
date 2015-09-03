@@ -722,24 +722,29 @@ namespace HODOREST
 			settingsWindow.ShowDialog(this);
 			if(settingsWindow.IgnoreChanged)
 			{
-				foreach (ListViewItem item in listView1.Items)
+				RefreshList();
+			}
+		}
+
+		private void RefreshList()
+		{
+			foreach (ListViewItem item in listView1.Items)
+			{
+				ShipProfile tempProfile = item.Tag as ShipProfile;
+
+				ListViewItem.ListViewSubItemCollection existingSubs = item.SubItems;
+				ListViewItem.ListViewSubItemCollection subs = GenerateItem(tempProfile).SubItems;
+				foreach (ListViewItem.ListViewSubItem exSub in existingSubs)
 				{
-					ShipProfile tempProfile = item.Tag as ShipProfile;
-
-					ListViewItem.ListViewSubItemCollection existingSubs = item.SubItems;
-					ListViewItem.ListViewSubItemCollection subs = GenerateItem(tempProfile).SubItems;
-					foreach (ListViewItem.ListViewSubItem exSub in existingSubs)
+					foreach (ListViewItem.ListViewSubItem sub in subs)
 					{
-						foreach (ListViewItem.ListViewSubItem sub in subs)
-						{
-							if (exSub.Name == sub.Name)
-								exSub.Text = sub.Text;
-						}
+						if (exSub.Name == sub.Name)
+							exSub.Text = sub.Text;
 					}
-
-					item.Checked = tempProfile.Enabled;
-					item.Tag = tempProfile;
 				}
+
+				item.Checked = tempProfile.Enabled;
+				item.Tag = tempProfile;
 			}
 		}
 
@@ -792,8 +797,12 @@ namespace HODOREST
 				}
 			}
 
-			runner = new RunWindow(sendList);
-			runner.ShowDialog();
+			if (sendList.Count > 0)
+			{
+				runner = new RunWindow(sendList);
+				runner.ShowDialog();
+				RefreshList();
+			}
 		}
 
 		private void btnDelete_Click(object sender, EventArgs e)
@@ -821,6 +830,11 @@ namespace HODOREST
 				e.NewValue = CheckState.Checked;
 			else
 				e.NewValue = CheckState.Unchecked;
+		}
+
+		private void toolStripButton1_Click(object sender, EventArgs e)
+		{
+			RefreshList();
 		}
 	}
 }
