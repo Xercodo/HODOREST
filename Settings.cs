@@ -24,7 +24,30 @@ namespace HODOREST
 			txtGlobalDir.Text = Properties.Settings.Default.GlobalOutput;
 			chkIgnore.Checked = Properties.Settings.Default.IgnoreMap;
 			ignoreValue = Properties.Settings.Default.IgnoreMap;
+			LoadNotifcation();
 			updating = false;
+		}
+
+		private void LoadNotifcation()
+		{
+			switch (Properties.Settings.Default.Notify)
+			{
+				case "None":
+					this.rdoNone.Checked = true;
+					break;
+				case "Windows":
+					this.rdoWindows.Checked = true;
+					break;
+				case "Karen":
+					this.rdoKaren.Checked = true;
+					break;
+				case "Makaan":
+					this.rdoMakaan.Checked = true;
+					break;
+				case "Emperor":
+					this.rdoEmperor.Checked = true;
+					break;
+			}
 		}
 
 		private void btnBrowseHWDir_Click(object sender, EventArgs e)
@@ -94,6 +117,16 @@ namespace HODOREST
 				IgnoreChanged = true;
 			else
 				IgnoreChanged = false;
+		}
+
+		private void radioButton4_CheckedChanged(object sender, EventArgs e)
+		{
+			if (!updating)
+			{
+				RadioButton radio = sender as RadioButton;
+				Properties.Settings.Default.Notify = radio.Text;
+				Properties.Settings.Default.Save();
+			}
 		}
 	}
 }

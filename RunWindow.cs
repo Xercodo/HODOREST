@@ -97,6 +97,30 @@ namespace HODOREST
                 {
                     lblStatus.Text = "Current: DONE! (" + runList.Count + "/" + runList.Count + ")";
                 });
+
+			System.Media.SoundPlayer player;
+			switch (Properties.Settings.Default.Notify)
+			{
+				case "None":
+					return;
+				case "Windows":
+					System.Media.SystemSounds.Asterisk.Play();
+					break;
+				case "Karen":
+					player = new System.Media.SoundPlayer(Properties.Resources.karen);
+					player.Play();
+					break;
+				case "Makaan":
+					player = new System.Media.SoundPlayer(Properties.Resources.makaan);
+					player.Play();
+					break;
+				case "Emperor":
+					player = new System.Media.SoundPlayer(Properties.Resources.emperor);
+					player.Play();
+					break;
+				default:
+					break;
+			}
         }
 
         void WriteAsynch(string data)

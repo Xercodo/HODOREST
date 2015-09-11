@@ -82,5 +82,17 @@ namespace HODOREST.Properties {
                 this["IgnoreMap"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Windows")]
+        public string Notify {
+            get {
+                return ((string)(this["Notify"]));
+            }
+            set {
+                this["Notify"] = value;
+            }
+        }
     }
 }

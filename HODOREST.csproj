@@ -101,6 +101,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="RunWindow.resx">
       <DependentUpon>RunWindow.cs</DependentUpon>
@@ -122,6 +123,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\status_researchcomplete_1.wav" />
+    <None Include="Resources\emperor.wav" />
+    <None Include="Resources\karen.wav" />
+    <None Include="Resources\makaan.wav" />
     <Content Include="WorkshopTool_0000.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
