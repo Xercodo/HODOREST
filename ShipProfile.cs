@@ -37,7 +37,6 @@ namespace HODOREST
 		private bool compressDXT5;
 		public bool CompressDXT5 { get { return compressDXT5; } set { compressDXT5 = value; } }
 
-
 		private bool noOptimize;
 		public bool NoOptimize { get { return noOptimize; } set { noOptimize = value; } }
 
@@ -50,16 +49,20 @@ namespace HODOREST
 		private string filterList = "thruster,bay";
 		public string FilterList { get { return filterList; } set { filterList = value; } }
 
-
 		private bool stripJunk;
 		public bool StripJunk { get { return stripJunk; } set { stripJunk = value; } }
-
 
 		private string shader = "SHADERS";
 		public string Shader { get { return shader; } set { shader = value; } }
 
 		private List<string> newerFiles = new List<string>();
 		public List<string> NewerFiles { get { return newerFiles; } set { newerFiles = value; } }
+
+		private HashSet<KeyValuePair<string, string>> usedShaders = new HashSet<KeyValuePair<string, string>>();
+		public HashSet<KeyValuePair<string, string>> UsedShaders { get { return usedShaders; } set { usedShaders = value; } }
+
+		private List<ShaderProfile> shaders = new List<ShaderProfile>();
+		public List<ShaderProfile> Shaders { get { return shaders; } set { shaders = value; } }
 
 		public string ShipName
 		{
@@ -97,10 +100,10 @@ namespace HODOREST
 		}
 		public bool Enabled
 		{
-			get 
+			get
 			{
 				bool exists = File.Exists(this.Preview);
-				return (newerFiles.Count > 0) || !exists; 
+				return (newerFiles.Count > 0) || !exists;
 			}
 			set { enabled = value; }
 		}

@@ -39,11 +39,11 @@
 			this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
 			this.chkIgnore = new System.Windows.Forms.CheckBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.rdoKaren = new System.Windows.Forms.RadioButton();
-			this.rdoMakaan = new System.Windows.Forms.RadioButton();
-			this.rdoEmperor = new System.Windows.Forms.RadioButton();
 			this.rdoWindows = new System.Windows.Forms.RadioButton();
 			this.rdoNone = new System.Windows.Forms.RadioButton();
+			this.rdoEmperor = new System.Windows.Forms.RadioButton();
+			this.rdoMakaan = new System.Windows.Forms.RadioButton();
+			this.rdoKaren = new System.Windows.Forms.RadioButton();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
@@ -167,42 +167,6 @@
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Finish Notification";
 			// 
-			// rdoKaren
-			// 
-			this.rdoKaren.AutoSize = true;
-			this.rdoKaren.Location = new System.Drawing.Point(6, 19);
-			this.rdoKaren.Name = "rdoKaren";
-			this.rdoKaren.Size = new System.Drawing.Size(53, 17);
-			this.rdoKaren.TabIndex = 0;
-			this.rdoKaren.TabStop = true;
-			this.rdoKaren.Text = "Karen";
-			this.rdoKaren.UseVisualStyleBackColor = true;
-			this.rdoKaren.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
-			// 
-			// rdoMakaan
-			// 
-			this.rdoMakaan.AutoSize = true;
-			this.rdoMakaan.Location = new System.Drawing.Point(6, 42);
-			this.rdoMakaan.Name = "rdoMakaan";
-			this.rdoMakaan.Size = new System.Drawing.Size(64, 17);
-			this.rdoMakaan.TabIndex = 0;
-			this.rdoMakaan.TabStop = true;
-			this.rdoMakaan.Text = "Makaan";
-			this.rdoMakaan.UseVisualStyleBackColor = true;
-			this.rdoMakaan.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
-			// 
-			// rdoEmperor
-			// 
-			this.rdoEmperor.AutoSize = true;
-			this.rdoEmperor.Location = new System.Drawing.Point(76, 19);
-			this.rdoEmperor.Name = "rdoEmperor";
-			this.rdoEmperor.Size = new System.Drawing.Size(64, 17);
-			this.rdoEmperor.TabIndex = 0;
-			this.rdoEmperor.TabStop = true;
-			this.rdoEmperor.Text = "Emperor";
-			this.rdoEmperor.UseVisualStyleBackColor = true;
-			this.rdoEmperor.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
-			// 
 			// rdoWindows
 			// 
 			this.rdoWindows.AutoSize = true;
@@ -226,6 +190,42 @@
 			this.rdoNone.Text = "None";
 			this.rdoNone.UseVisualStyleBackColor = true;
 			this.rdoNone.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
+			// 
+			// rdoEmperor
+			// 
+			this.rdoEmperor.AutoSize = true;
+			this.rdoEmperor.Location = new System.Drawing.Point(76, 19);
+			this.rdoEmperor.Name = "rdoEmperor";
+			this.rdoEmperor.Size = new System.Drawing.Size(64, 17);
+			this.rdoEmperor.TabIndex = 0;
+			this.rdoEmperor.TabStop = true;
+			this.rdoEmperor.Text = "Emperor";
+			this.rdoEmperor.UseVisualStyleBackColor = true;
+			this.rdoEmperor.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
+			// 
+			// rdoMakaan
+			// 
+			this.rdoMakaan.AutoSize = true;
+			this.rdoMakaan.Location = new System.Drawing.Point(6, 42);
+			this.rdoMakaan.Name = "rdoMakaan";
+			this.rdoMakaan.Size = new System.Drawing.Size(64, 17);
+			this.rdoMakaan.TabIndex = 0;
+			this.rdoMakaan.TabStop = true;
+			this.rdoMakaan.Text = "Makaan";
+			this.rdoMakaan.UseVisualStyleBackColor = true;
+			this.rdoMakaan.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
+			// 
+			// rdoKaren
+			// 
+			this.rdoKaren.AutoSize = true;
+			this.rdoKaren.Location = new System.Drawing.Point(6, 19);
+			this.rdoKaren.Name = "rdoKaren";
+			this.rdoKaren.Size = new System.Drawing.Size(53, 17);
+			this.rdoKaren.TabIndex = 0;
+			this.rdoKaren.TabStop = true;
+			this.rdoKaren.Text = "Karan";
+			this.rdoKaren.UseVisualStyleBackColor = true;
+			this.rdoKaren.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
 			// 
 			// Settings
 			// 

@@ -6,30 +6,16 @@ using System.Threading.Tasks;
 
 namespace HODOREST
 {
-	class ShaderProfile
+	public class ShaderProfile
 	{
-
 		private string name;
+		public string Name { get { return name; } set { name = value; } }
+
 		private int lineNumber;
+		public int LineNumber { get { return lineNumber; } set { lineNumber = value; } }
+
 		private List<string> files;
-
-		public string Name
-		{
-			get { return name; }
-			set { name = value; }
-		}
-
-		public int LineNumber
-		{
-			get { return lineNumber; }
-			set { lineNumber = value; }
-		}
-
-		public List<string> FileNames
-		{
-			get { return files; }
-			set { files = value; }
-		}
+		public List<string> FileNames { get { return files; } set { files = value; } }
 
 		public ShaderProfile()
 		{

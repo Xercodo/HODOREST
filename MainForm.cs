@@ -26,6 +26,19 @@ namespace HODOREST
         {
             InitializeComponent();
 
+			Point startLoc = Properties.Settings.Default.Location;
+			Size startSize = Properties.Settings.Default.Size;
+			if(startLoc != new Point(0,0) && startSize != new Size(0,0))
+			{
+				this.Location = startLoc;
+				this.Size = startSize;
+				this.StartPosition = FormStartPosition.Manual;
+			}
+			else
+			{
+				this.StartPosition = FormStartPosition.CenterScreen;
+			}
+
 			if (Properties.Settings.Default.DoUpgrade)
 			{
 				Properties.Settings.Default.Upgrade();
@@ -395,105 +408,91 @@ namespace HODOREST
 			return newerFiles;
 		}
 
+		private string GetDate(string fileName)
+		{
+			string returnSting = "";
+
+			if (File.Exists(fileName))
+			{
+				string date = File.GetLastWriteTime(fileName).ToShortDateString();
+				string time = File.GetLastWriteTime(fileName).ToShortTimeString();
+				returnSting = date + " " + time;
+			}
+
+			return returnSting;
+		}
+
 		private ListViewItem GenerateItem(ShipProfile profile)
 		{
 			ListViewItem newItem = new ListViewItem("");
 			newItem.Checked = profile.Enabled;
 			ListViewItem.ListViewSubItem subItem;
+			string hodPath = profile.OutputDir + "\\" + profile.ShipName + "\\" + profile.ShipName + ".hod";
+			bool daeExists = File.Exists(profile.DAEFile);
+			bool hodExists = File.Exists(hodPath);
+			string mapFile = Properties.Settings.Default.HomeworldDir + @"\GBXTools\HODOR\" + profile.Shader + ".MAP";
 
 			subItem = new ListViewItem.ListViewSubItem();
 			subItem.Name = "Name";
 			subItem.Text = profile.ShipName;
-
 			newItem.SubItems.Add(subItem);
 
-			string daetime = "";
-			if (File.Exists(profile.DAEFile))
-			{
-				string date = File.GetLastWriteTime(profile.DAEFile).ToShortDateString();
-				string time = File.GetLastWriteTime(profile.DAEFile).ToShortTimeString();
-				daetime = date + " " + time;
+			string daetime = GetDate(profile.DAEFile);
+			subItem = new ListViewItem.ListViewSubItem();
+			subItem.Name = "DAEDate";
+			subItem.Text = daetime;
+			newItem.SubItems.Add(subItem);
 
-				subItem = new ListViewItem.ListViewSubItem();
-				subItem.Name = "DAEDate";
-				subItem.Text = daetime;
+			string hodtime = GetDate(hodPath);
+			subItem = new ListViewItem.ListViewSubItem();
+			subItem.Name = "HODDate";
+			subItem.Text = hodtime;
+			newItem.SubItems.Add(subItem);
 
-				newItem.SubItems.Add(subItem);
-			}
-			else
-			{
-				subItem = new ListViewItem.ListViewSubItem();
-				subItem.Name = "DAEDate";
-				subItem.Text = daetime;
-
-				newItem.SubItems.Add(subItem);
-			}
-
-			string hodPath = profile.OutputDir + "\\" + profile.ShipName + "\\" + profile.ShipName + ".hod";
-			string hodtime = "";
 			DateTime hodDateTime;
-			if (File.Exists(hodPath))
-			{
+			if (hodExists)
 				hodDateTime = File.GetLastWriteTime(hodPath);
-				string date = hodDateTime.ToShortDateString();
-				string time = hodDateTime.ToShortTimeString();
-				hodtime = date + " " + time;
-
-				subItem = new ListViewItem.ListViewSubItem();
-				subItem.Name = "HODDate";
-				subItem.Text = hodtime;
-
-				newItem.SubItems.Add(subItem);
-			}
 			else
-			{
 				hodDateTime = new DateTime();
-
-				subItem = new ListViewItem.ListViewSubItem();
-				subItem.Name = "HODDate";
-				subItem.Text = hodtime;
-
-				newItem.SubItems.Add(subItem);
-			}
 
 			HashSet<string> files = new HashSet<string>();
 			string warning = "";
-
-			if (File.Exists(hodPath))
+			if(!hodExists)
+				warning = "NEWER FILES";
+			else if (hodExists && daeExists)
 			{
-				DateTime hodDate = File.GetLastWriteTime(hodPath);
+				string directory = Path.GetDirectoryName(profile.DAEFile);
 
-				if (File.Exists(profile.DAEFile))
+				if (Compare(daetime, hodtime) > 0)
 				{
-					string directory = Path.GetDirectoryName(profile.DAEFile);
+					files.Add(profile.DAEFile);
+					profile.Shaders = LoadShaderList(mapFile);
+					profile.UsedShaders = GetShaderTexturePairs(profile.DAEFile);
+				}
+				else
+				{
+					if (profile.Shaders.Count == 0)
+						profile.Shaders = LoadShaderList(mapFile);
 
-					HashSet<KeyValuePair<string, string>> usedShaders = GetShaderTexturePairs(profile.DAEFile);
+					if (profile.UsedShaders.Count == 0)
+						profile.UsedShaders = GetShaderTexturePairs(profile.DAEFile);
+				}
 
-					string mapFile = Properties.Settings.Default.HomeworldDir + @"\GBXTools\HODOR\" + profile.Shader + ".MAP";
-					List<ShaderProfile> shaders = LoadShaderList(mapFile);
+				files = CheckTextures(directory, hodDateTime, profile.UsedShaders, profile.Shaders);
 
-					files = CheckTextures(directory, hodDate, usedShaders, shaders);
+				if (!Properties.Settings.Default.IgnoreMap)
+				{
+					DateTime mapDate = File.GetLastWriteTime(mapFile);
+					if (mapDate > hodDateTime)
+						files.Add(mapFile);
+				}
 
-					if (File.Exists(profile.DAEFile) && File.Exists(hodPath))
-					{
-						if (Compare(daetime, hodtime) > 0)
-							files.Add(profile.DAEFile);
-					}
+				profile.NewerFiles = new List<string>();
+				profile.NewerFiles.AddRange(files);
 
-					if (!Properties.Settings.Default.IgnoreMap)
-					{
-						DateTime mapDate = File.GetLastWriteTime(mapFile);
-						if (mapDate > hodDateTime)
-							files.Add(mapFile);
-					}
-
-					profile.NewerFiles = new List<string>();
-					profile.NewerFiles.AddRange(files);
-
-					if (files.Count > 0)
-					{
-						warning = "NEWER FILES";
-					}
+				if (files.Count > 0)
+				{
+					warning = "NEWER FILES";
 				}
 			}
 
@@ -572,6 +571,10 @@ namespace HODOREST
 			}
 
 			currentProfile.PreviewRebuild -= UpdatePreview;
+
+			Properties.Settings.Default.Location = this.Location;
+			Properties.Settings.Default.Size = this.Size;
+			Properties.Settings.Default.Save();
 
 			SaveList();
 		}

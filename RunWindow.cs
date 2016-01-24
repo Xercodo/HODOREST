@@ -106,7 +106,7 @@ namespace HODOREST
 				case "Windows":
 					System.Media.SystemSounds.Asterisk.Play();
 					break;
-				case "Karen":
+				case "Karan":
 					player = new System.Media.SoundPlayer(Properties.Resources.karen);
 					player.Play();
 					break;

@@ -38,7 +38,7 @@ namespace HODOREST
 				case "Windows":
 					this.rdoWindows.Checked = true;
 					break;
-				case "Karen":
+				case "Karan":
 					this.rdoKaren.Checked = true;
 					break;
 				case "Makaan":
